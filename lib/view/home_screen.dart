@@ -1,153 +1,220 @@
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:hive_crud/controller/hive_boxess.dart';
+import 'package:hive_crud/model/person.dart';
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final TextEditingController keyController = TextEditingController();
-  final TextEditingController valueController = TextEditingController();
-  late Box myBox;
+  /* List<Person> sortedPersonList = [];
+  void LoadAndSort() {
+    final persons = boxPersons.values.toList().cast<Person>();
+    persons.sort((a, b) => a.age.compareTo(b.age)); // Sort by age
+    setState(() {
+      sortedPersonList = persons;
+    });
+  }
 
   @override
   void initState() {
     super.initState();
-    myBox = Hive.box('myBox');
-  }
+    LoadAndSort();
+  } */
 
-  void addItem() {
-    final key = keyController.text;
-    final value = valueController.text;
-
-    if (key.isNotEmpty && value.isNotEmpty) {
-      myBox.put(key, value);
-
-      keyController.clear();
-      valueController.clear();
-
-      setState(() {});
-    }
-  }
-
-  void updateItem(String key, String value) {
-    keyController.text = key;
-    valueController.text = value;
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Update Item'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: keyController,
-              decoration: InputDecoration(labelText: 'Key'),
-            ),
-            TextField(
-              controller: valueController,
-              decoration: InputDecoration(labelText: 'Value'),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              final newKey = keyController.text;
-              final newValue = valueController.text;
-
-              if (newKey.isNotEmpty && newValue.isNotEmpty) {
-                myBox.delete(key);
-                myBox.put(newKey, newValue);
-
-                keyController.clear();
-                valueController.clear();
-
-                Navigator.of(context).pop();
-                setState(() {});
-              }
-            },
-            child: Text('Update'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void deleteItem(String key) {
-    myBox.delete(key);
-    setState(() {});
-  }
+  //
+  final nameContoller = TextEditingController();
+  final ageContoller = TextEditingController();
+  //
+  final nameEditContoller = TextEditingController();
+  final ageEditContoller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Hive CRUD')),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                TextField(
-                  controller: keyController,
-                  decoration: InputDecoration(labelText: 'Key'),
+      backgroundColor: Colors.grey.shade200,
+      appBar: AppBar(
+        title: Text("Hive Screen"),
+        centerTitle: true,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Container(
+              // height: 300,
+              width: double.infinity,
+              //color: Colors.amber,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  children: [
+                    TextFormField(
+                      controller: nameContoller,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        hintText: "Name",
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    TextFormField(
+                      controller: ageContoller,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        hintText: "Name",
+                      ),
+                    ),
+                    SizedBox(height: 40),
+                    ElevatedButton(
+                      style: ButtonStyle(),
+                      onPressed: () {
+                        setState(() {
+                          boxPersons.put(
+                            'key)_${nameContoller.text} ',
+                            Person(
+                              name: nameContoller.text,
+                              age: int.parse(ageContoller.text),
+                            ),
+                          );
+                        });
+                        nameContoller.clear();
+                        ageContoller.clear();
+                      },
+                      child: Text("save"),
+                    ),
+                    Divider(
+                      color: Colors.black,
+                    ),
+                  ],
                 ),
-                TextField(
-                  controller: valueController,
-                  decoration: InputDecoration(labelText: 'Value'),
-                ),
-                SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: addItem,
-                  child: Text('Add Item'),
-                ),
-              ],
+              ),
             ),
-          ),
-          Expanded(
-            child: ValueListenableBuilder(
-              valueListenable: myBox.listenable(),
-              builder: (context, Box box, _) {
-                if (box.isEmpty) {
-                  return Center(child: Text('No data available.'));
-                }
-
-                return ListView.builder(
-                  itemCount: box.length,
-                  itemBuilder: (context, index) {
-                    final key = box.keyAt(index);
-                    final value = box.get(key);
-
-                    if (key is String && value is String) {
-                      return ListTile(
-                        title: Text('Key: $key'),
-                        subtitle: Text('Value: $value'),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              icon: Icon(Icons.edit),
-                              onPressed: () => updateItem(key, value),
-                            ),
-                            IconButton(
-                              icon: Icon(Icons.delete),
-                              onPressed: () => deleteItem(key),
-                            ),
-                          ],
-                        ),
-                      );
-                    } else {
-                      return Container(); // Handle non-string cases or errors
-                    }
-                  },
-                );
+            IconButton(
+              onPressed: () {
+                setState(() {
+                  // LoadAndSort();
+                });
+                //
               },
+              icon: Icon(Icons.sort),
             ),
-          ),
-        ],
+            Expanded(
+                child: Container(
+              color: Colors.white,
+              child: ListView.builder(
+                  itemCount: boxPersons.length,
+                  itemBuilder: (context, index) {
+                    // Person person = sortedPersonList[index];
+                    Person person = boxPersons.getAt(index);
+                    return ListTile(
+                      title: Text(person.name),
+                      subtitle: Text(person.age.toString()),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.edit),
+                            onPressed: () {
+                              nameEditContoller.text = person.name;
+                              ageEditContoller.text = person.age.toString();
+                              Scaffold.of(context).showBottomSheet(
+                                (context) => Container(
+                                  // height: 200,
+                                  color: Colors.amber.shade100,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(20),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        TextFormField(
+                                          controller: nameEditContoller,
+                                          decoration: InputDecoration(
+                                            border: OutlineInputBorder(),
+
+                                            // hintText: "Name",
+                                          ),
+                                        ),
+                                        SizedBox(height: 20),
+                                        TextFormField(
+                                          controller: ageEditContoller,
+                                          decoration: InputDecoration(
+                                            border: OutlineInputBorder(),
+                                          ),
+                                        ),
+                                        SizedBox(height: 40),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceAround,
+                                          children: [
+                                            ElevatedButton(
+                                              style: ButtonStyle(),
+                                              onPressed: () {
+                                                setState(() {
+                                                  boxPersons.putAt(
+                                                      index,
+                                                      Person(
+                                                        name: nameEditContoller
+                                                            .text,
+                                                        age: int.parse(
+                                                            ageEditContoller
+                                                                .text),
+                                                      ));
+                                                });
+                                                /* nameEditContoller.clear();
+                                                ageEditContoller.clear(); */
+                                                Navigator.pop(context);
+                                              },
+                                              child: Text("save"),
+                                            ),
+                                            ElevatedButton(
+                                              style: ButtonStyle(),
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              },
+                                              child: Text("cancel"),
+                                            ),
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.delete),
+                            onPressed: () {
+                              setState(() {
+                                boxPersons.deleteAt(index);
+                              });
+                            },
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
+            ))
+          ],
+        ),
+      ),
+      bottomNavigationBar: BottomAppBar(
+        clipBehavior: Clip.antiAlias,
+        elevation: 0,
+        notchMargin: BorderSide.strokeAlignCenter,
+        shadowColor: Colors.amber.shade900,
+        color: Colors.transparent,
+        child: ElevatedButton(
+            onPressed: () {
+              setState(() {
+                boxPersons.clear();
+              });
+            },
+            child: Text("clear all(${boxPersons.length})")),
       ),
     );
   }

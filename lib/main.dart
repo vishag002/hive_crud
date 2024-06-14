@@ -2,9 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:hive_crud/view/home_screen.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+import 'controller/hive_boxess.dart';
+import 'model/person.dart';
+
 void main() async {
   await Hive.initFlutter();
-  var box = await Hive.openBox('myBox');
+  Hive.registerAdapter(PersonAdapter());
+  boxPersons = await Hive.openBox<Person>('personBox');
+
   runApp(MyApp());
 }
 
